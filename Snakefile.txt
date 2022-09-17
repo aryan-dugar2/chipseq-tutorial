@@ -1,0 +1,50 @@
+import os
+
+sra_codes = ["SRR502329", "SRR502327","SRR502228","SRR502225"]
+
+# Go from SRA code to fastq
+# Go from fastq to bam via alignment
+
+rule all:
+    input:
+        expand("./bams/{name}.bam", name = sra_codes)
+
+rule fastq:
+    output:
+        "./fastqs/{name}.fastq"
+    log:
+        stderr = "./logs/{name}.log"
+    shell:
+        """
+        ml sra-tools
+        fastq-dump -Z {wildcards.name} > {output}
+        2> {log.stderr}
+        """
+
+rule bowtie:
+    input:
+        "./fastqs/{name}.fastq"
+    output:
+        "./sams/{name}.sam"
+    log:
+        stderr = "./logs/{name}_bt.log"
+    shell:
+        """
+        ml bowtie2
+        bowtie2 -q -p 4 -k 1 --local --no-unal -x hg19 {input} > {output}
+        2> {log.stderr}
+        """
+
+rule filter:
+    input:
+        "./sams/{name}.sam"
+    output:
+        "./bams/{name}.bam"
+    log:
+        stderr = "./logs/{name}_filt.log"
+    shell:
+        """
+        ml samtools
+	./process.sh {wildcards.name}
+	2> {log.stderr}
+	"""
