@@ -1,0 +1,3 @@
+SampleID, Condition, Replicate, bamReads, Peaks, PeakCaller
+SRR502327,STAT1_6h, 1, sortbams/SRR502327.bam, macs/STAT1_6h_IFNa_summits.bed, bed
+SRR502329,STAT1_30m, 1, sortbams/SRR502329.bam, macs/STAT1_30m_IFNa_summits.bed, bed
